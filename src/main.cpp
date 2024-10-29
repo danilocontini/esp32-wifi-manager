@@ -268,8 +268,8 @@ void setup()
 
     server.serveStatic("/", SPIFFS, "/");
 
-    // Handle scan request
-    server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request)
+    // Handle scan networks request
+    server.on("/networks", HTTP_GET, [](AsyncWebServerRequest *request)
               {
         // Trigger a scan if not already scanning
     if (scanState == IDLE) {

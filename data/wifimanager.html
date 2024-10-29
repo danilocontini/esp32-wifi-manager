@@ -42,7 +42,7 @@
     let networks = document.getElementById('networks');
     networks.innerHTML = '<option disabled selected>Scanning...</option>'; // Placeholder during scan
 
-    fetch('/scan')
+    fetch('/networks')
       .then(response => {
         console.log('Responsee', response)
         if (!response.ok) {
