@@ -1,0 +1,211 @@
+html {
+  font-family: Arial, Helvetica, sans-serif;
+  display: inline-block;
+  text-align: center;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #333333;
+  padding: .5em 1em;
+  display: flex;
+  align-items: center;
+}
+
+.topnav p {
+  margin: 0;
+  padding: 0;
+  font-family: Helvetica, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 100;
+  color: #ceff00;
+}
+
+.logo {
+  /* width: 4em; */
+  height: 4em;
+  margin: 0 1em;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #FFFFFF;
+}
+
+.content {
+  padding: 1em;
+  display: flex;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 0 auto;
+  padding: 1em;
+  border-radius: .5em;
+  box-shadow: 2px 2px 12px 1px rgba(140, 140, 140, .5);
+  font-family: Helvetica, sans-serif;
+  font-weight: 100;
+}
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 100;
+  color: #333;
+}
+.card-body {
+  font-size: 1.2rem;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.card-body p {
+  margin: 0;
+  padding: .5rem 1rem;
+  background-color: #333;
+  border-radius: 5rem;
+  font-size: 1.4rem;
+  color: #ceff00;
+}
+.card-body p i {
+  text-shadow: 0 1px 5px #33333366;
+}
+.card-body span {
+  margin: 1.2rem auto 2rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.field {
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  flex-direction: row;
+}
+
+.field.actions {
+  justify-content: center;
+}
+
+label {
+  display: flex;
+  font-size: 1rem;
+  font-weight: 100;
+  color: #333333;
+  justify-content: flex-end;
+  flex: 0 10%;
+  text-align: right;
+  min-width: 160px;
+}
+
+@media screen and (max-width: 768px) {
+  .field {
+    flex-wrap: wrap;
+  }
+  label {
+    flex-basis: 100%;
+    text-align: left;
+    justify-content: flex-start;
+  }
+}
+
+input[type=text],
+input[type=number],
+input[type=password],
+select {
+  display: flex;
+  flex: 1;
+  padding: 14px 20px;
+  margin: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button.submit,
+button.refresh {
+  border: none;
+  color: #ceff00;
+  background-color: #333333;
+  padding: 12px 20px;
+  margin: 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 4px;
+  transition-duration: 0.4s;
+}
+
+button.submit:hover,
+button.refresh:hover {
+  background-color: #666666;
+}
+
+button.refresh {
+  background-image: url('./refresh.svg');
+  background-size: 1.5em;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 50px;
+  height: 46px;
+}
+
+.value {
+  font-size: 1.2rem;
+  color: #1282A2;
+}
+
+.state {
+  font-size: 1.2rem;
+  color: #1282A2;
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+}
+.button-on,
+.button-off {
+  padding: 8px 20px;
+  margin: 4px 8px;
+  text-decoration: none;
+  border-radius: 50px;
+  transition-duration: 300ms;
+  transition-timing-function: ease;
+  transition-property: background-color box-shadow;
+}
+.button-on,
+.button-on:active,
+.button-on:visited {
+  background-color: #333;
+  color: #ceff00;
+}
+
+.button-on:hover {
+  background-color: #666;
+  color: #ceff00;
+}
+
+.button-off,
+.button-off:active,
+.button-off:visited {
+  background-color: #858585;
+  color: #FFFFFF;
+}
+
+.button-off:hover {
+  background-color: #252524;
+  color: #FFFFFF;
+}
+
+.button-on:hover,
+.button-off:hover {
+  box-shadow: 0 3px 5px #00000033;
+}

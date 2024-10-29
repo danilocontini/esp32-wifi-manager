@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>bibe - Gerenciamento de Wi-Fi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body onload="refreshNetworks()">
+  <div class="topnav">
+    <img src="bibe_logo_dark.svg" class="logo" />
+    <p>bibe</p>
+  </div>
+  <div class="content">
+    <div class="card">
+      <p class="card-title">Gerenciamento de Wi-Fi</p>
+      <form>
+        <div class="field">
+          <label for="networks">Redes disponíveis:</label>
+          <select id="networks">
+            <option disabled selected>Scanning for networks...</option>
+          </select>
+          <button type="button" class="refresh" onclick="refreshNetworks()"></button>
+        </div>
+        <div class="field">
+          <label for="password">Senha:</label>
+          <input type="password" id="password">
+        </div>
+        <div class="field actions">
+          <button type="button" class="submit" onclick="saveConfig()">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+<script>
+  // Function to refresh network list
+  function refreshNetworks() {
+    let networks = document.getElementById('networks');
+    networks.innerHTML = '<option disabled selected>Scanning...</option>'; // Placeholder during scan
+
+    fetch('/scan')
+      .then(response => {
+        console.log('Responsee', response)
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('DATA', data)
+        networks.innerHTML = ''; // Clear existing options
+
+        if (data.length === 0) {
+          let option = document.createElement('option');
+          option.text = 'No networks found';
+          option.disabled = true;
+          networks.add(option);
+        } else {
+          data.forEach(network => {
+            let option = document.createElement('option');
+            option.value = network.ssid;
+            option.text = `${network.ssid} (${network.rssi} dBm) ${network.encryption}`;
+            networks.add(option);
+          });
+        }
+      })
+      .catch(error => {
+        networks.innerHTML = '<option disabled>Error scanning networks</option>';
+        console.error('Error during fetch:', error);
+      });
+  }
+
+  // Function to save WiFi credentials
+  function saveConfig() {
+    let ssid = document.getElementById('networks').value;
+    let password = document.getElementById('password').value;
+
+    // Ensure a network is selected
+    if (!ssid) {
+      alert('Please select a network.');
+      return;
+    }
+
+    fetch('/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded' // Change to form encoding
+      },
+      body: `ssid=${encodeURIComponent(ssid)}&password=${encodeURIComponent(password)}`
+    })
+      .then(response => {
+        if (response.ok) {
+          alert('Configuration saved!');
+        } else {
+          alert('Failed to save configuration.');
+        }
+      })
+      .catch(error => {
+        alert('Error saving configuration.');
+        console.error('Error:', error);
+      });
+  }
+</script>
+
+</html>
