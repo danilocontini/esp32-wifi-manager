@@ -58,6 +58,33 @@ unsigned long lastScanTime = 0;
 const unsigned long scanInterval = 60000; // 1 minute interval
 String cachedScanResults = "[]"; // Initialize cached scan results
 
+void scanNetworksTask(void *pvParameters) {
+    while (true) {
+        if (millis() - lastScanTime >= scanInterval && scanState == IDLE) {
+            WiFi.scanNetworks(true); // Inicia scan assíncrono
+            scanState = SCANNING;
+        } else if (scanState == SCANNING) {
+            int n = WiFi.scanComplete();
+            if (n >= 0) {
+                DynamicJsonDocument doc(2048);
+                JsonArray networks = doc.to<JsonArray>();
+                for (int i = 0; i < n; ++i) {
+                    JsonObject network = networks.createNestedObject();
+                    network["ssid"] = WiFi.SSID(i);
+                    network["rssi"] = WiFi.RSSI(i);
+                    network["enc"] = WiFi.encryptionType(i);
+                }
+                cachedScanResults = "";
+                serializeJson(doc, cachedScanResults);
+                WiFi.scanDelete();
+                scanState = COMPLETED;
+                lastScanTime = millis();
+            }
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000)); // Delay para não sobrecarregar
+    }
+}
+
 void scanNetworks() {
     static int n = -1; // Declare n outside the switch statement
 
@@ -269,20 +296,21 @@ void setup()
     server.serveStatic("/", SPIFFS, "/");
 
     // Handle scan networks request
-    server.on("/networks", HTTP_GET, [](AsyncWebServerRequest *request)
-              {
-        // Trigger a scan if not already scanning
-    if (scanState == IDLE) {
-        scanNetworks();
-    }
+    // server.on("/networks", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //     if (scanState == IDLE) {
+    //         scanNetworks();
+    //     }
+    //     while (scanState != COMPLETED) {
+    //         delay(100); // Small delay to avoid blocking too long
+    //         scanNetworks();
+    //     }
+    //         Serial.printf("Saved list: %s\n", cachedScanResults.c_str());
+    //         request->send(200, "application/json", cachedScanResults);
+    // });
+    server.on("/networks", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "application/json", cachedScanResults);
+    });
 
-    // Wait for scan to complete
-    while (scanState != COMPLETED) {
-        delay(100); // Small delay to avoid blocking too long
-        scanNetworks();
-    }
-        Serial.printf("Saved list: %s\n", cachedScanResults.c_str());
-        request->send(200, "application/json", cachedScanResults); });
 
     // Handle saving WiFi credentials
     server.on("/save", HTTP_POST, [](AsyncWebServerRequest *request)
@@ -334,6 +362,7 @@ void setup()
       delay(3000);
       ESP.restart(); });
     server.begin();
+    xTaskCreatePinnedToCore(scanNetworksTask, "NetworkScanTask", 4096, NULL, 1, NULL, 1);
   }
 }
 

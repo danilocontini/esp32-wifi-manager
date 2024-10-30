@@ -38,13 +38,36 @@
 </body>
 <script>
   // Function to refresh network list
+  function encryptationMap(enc) {
+    switch (enc) {
+      case 0:
+        return 'Open';
+      case 1:
+        return 'WEP';
+      case 2:
+        return 'WPA_PSK';
+      case 3:
+        return 'WPA2_PSK';
+      case 4:
+        return 'WPA_WPA2_PSK';
+      case 5:
+        return 'WPA2_ENTERPRISE';
+      case 6:
+        return 'WPA3_PSK';
+      case 7:
+        return 'WPA2_WPA3_PSK';
+      default:
+        return 'Unknown';
+    }
+  }
   function refreshNetworks() {
     let networks = document.getElementById('networks');
+    networks.disabled = true;
     networks.innerHTML = '<option disabled selected>Scanning...</option>'; // Placeholder during scan
 
     fetch('/networks')
       .then(response => {
-        console.log('Responsee', response)
+        networks.disabled = false;
         if (!response.ok) {
           throw new Error('Network response was not ok.');
         }
@@ -56,20 +79,22 @@
 
         if (data.length === 0) {
           let option = document.createElement('option');
-          option.text = 'No networks found';
-          option.disabled = true;
+          option.text = 'Nenhuma rede encontrada';
+          option.selected = true;
           networks.add(option);
+          networks.disabled = true;
         } else {
           data.forEach(network => {
             let option = document.createElement('option');
             option.value = network.ssid;
-            option.text = `${network.ssid} (${network.rssi} dBm) ${network.encryption}`;
+            option.text = `${network.ssid} (${network.rssi} dBm) ${encryptationMap(network.enc)}`;
             networks.add(option);
           });
         }
       })
       .catch(error => {
-        networks.innerHTML = '<option disabled>Error scanning networks</option>';
+        networks.disabled = true;
+        networks.innerHTML = '<option selected>Erro ao buscar as redes</option>';
         console.error('Error during fetch:', error);
       });
   }
